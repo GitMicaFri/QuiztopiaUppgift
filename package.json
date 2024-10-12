@@ -1,0 +1,30 @@
+{
+  "name": "quiztopiauppgift",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "deploy": "serverless deploy",
+    "offline": "serverless offline start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.665.0",
+    "@aws-sdk/lib-dynamodb": "^3.665.0",
+    "@middy/core": "^2.5.0",
+    "@middy/http-error-handler": "^2.5.0",
+    "@middy/http-header-normalizer": "^2.5.0",
+    "@middy/http-json-body-parser": "^2.5.0",
+    "@middy/validator": "^2.5.0",
+    "ajv": "^8.17.1",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.5",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "^5.0.7",
+    "serverless": "^4.4.4",
+    "uuid": "^10.0.0"
+  }
+}

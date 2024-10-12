@@ -1,0 +1,129 @@
+service: quiztopiauppgift
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-north-1
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 'dynamodb:PutItem' # Skapa eller uppdatera en post i DynamoDB
+        - 'dynamodb:GetItem' # Hämta en post från DynamoDB
+        - 'dynamodb:Query' # Sök efter poster i DynamoDB
+        - 'dynamodb:DeleteItem' # Ta bort en post från DynamoDB
+      Resource:
+        - 'arn:aws:dynamodb:eu-north-1:682033491119:table/quiztopia-users'
+        - 'arn:aws:dynamodb:eu-north-1:682033491119:table/quiztopia-quizzes'
+        - 'arn:aws:dynamodb:eu-north-1:682033491119:table/quiztopia-users/index/userNameIndex'
+    - Effect: 'Allow'
+      Action:
+        - 'logs:CreateLogGroup' # Skapa en ny loggrupp i CloudWatch
+        - 'logs:CreateLogStream' # Skapa en ny loggström i CloudWatch
+        - 'logs:PutLogEvents' # Skicka loggar till CloudWatch
+      Resource: '*'
+  environment: # Här definieras miljövariabler
+    DYNAMODB_USERS_TABLE: quiztopia-users # Miljövariabel för användartabellen
+    DYNAMODB_USER_INDEX: userNameIndex # Sekundärt index för användarnamn
+    DYNAMODB_QUIZZES_TABLE: quiztopia-quizzes # Miljövariabel för quizzestabellen
+    JWT_SECRET: '533933c70d1f76ac0e117cba7543ce20b77845fc2e9564140924eef5479bf482c0c58383d3ba27b7ee2658c3e9e0cdc78a8d292550b7a90b676c32ad52cef781' # Din JWT-hemlighet
+
+functions:
+  # User endpoints
+  signUp:
+    handler: src/handlers/signUp.handler
+    events:
+      - http:
+          path: signup
+          method: post
+
+  signIn:
+    handler: src/handlers/signIn.handler
+    events:
+      - http:
+          path: signIn
+          method: post
+
+  deleteUser:
+    handler: src/handlers/deleteUser.handler
+    events:
+      - http:
+          path: users/{userId}
+          method: delete
+
+  # Quiz endpoints
+  createQuiz:
+    handler: src/handlers/createQuiz.handler
+    events:
+      - http:
+          path: quizzes
+          method: post
+
+  updateQuiz:
+    handler: src/handlers/updateQuiz.handler
+    events:
+      - http:
+          path: quizzes/{quizId}
+          method: put
+
+  getQuiz:
+    handler: src/handlers/getQuiz.handler
+    events:
+      - http:
+          path: quizzes/{quizId}
+          method: get
+
+  getAllQuizzes:
+    handler: src/handlers/getAllQuizzes.handler
+    events:
+      - http:
+          path: quizzes
+          method: get
+
+  deleteQuiz:
+    handler: src/handlers/deleteQuiz.handler
+    events:
+      - http:
+          path: quizzes/{quizId}
+          method: delete
+
+  addQuestion:
+    handler: src/handlers/addQuestion.handler
+    events:
+      - http:
+          path: quizzes/{quizId}/questions
+          method: post
+
+resources:
+  Resources:
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: quiztopia-users
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: userName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: userId # userId = PK
+            KeyType: HASH
+        GlobalSecondaryIndexes:
+          - IndexName: userNameIndex
+            KeySchema:
+              - AttributeName: userName
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+    QuizzesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: quiztopia-quizzes
+        AttributeDefinitions:
+          - AttributeName: quizId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: quizId # quizId = PK
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST

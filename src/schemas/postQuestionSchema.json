@@ -1,0 +1,27 @@
+{
+  "type": "object",
+  "properties": {
+    "body": {
+      "type": "object",
+      "properties": {
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "questionText": { "type": "string" },
+              "answer": { "type": "string" },
+              "longitude": { "type": "number" },
+              "latidtude": { "type": "number" }
+            },
+            "required": ["questionText", "answer", "longitude", "latidtude"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["questions"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["body"]
+}

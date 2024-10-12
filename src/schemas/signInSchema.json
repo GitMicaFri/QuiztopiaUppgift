@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "required": ["body"],
+  "properties": {
+    "body": {
+      "type": "object",
+      "required": ["userName", "password"],
+      "additionalProperties": false,
+      "properties": {
+        "userName": { "type": "string" },
+        "password": { "type": "string" }
+      }
+    }
+  }
+}
