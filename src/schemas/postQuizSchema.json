@@ -1,8 +1,11 @@
 {
   "type": "object",
+  "required": ["body"],
   "properties": {
     "body": {
       "type": "object",
+      "required": ["quizName", "description"],
+      "additionalProperties": false,
       "properties": {
         "quizName": { "type": "string" },
         "description": { "type": "string" },
@@ -10,20 +13,17 @@
           "type": "array",
           "items": {
             "type": "object",
+            "required": ["questionText", "answer", "longitude", "latitude"],
+            "additionalProperties": false,
             "properties": {
               "questionText": { "type": "string" },
               "answer": { "type": "string" },
               "longitude": { "type": "number" },
-              "latidtude": { "type": "number" }
-            },
-            "required": ["questionText", "answer", "longitude", "latidtude"],
-            "additionalProperties": false
+              "latitude": { "type": "number" }
+            }
           }
         }
-      },
-      "required": ["quizName", "description"],
-      "additionalProperties": false
+      }
     }
-  },
-  "required": ["body"]
+  }
 }

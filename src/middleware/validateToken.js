@@ -2,27 +2,27 @@ import jwt from 'jsonwebtoken'; // JSON Web Token-bibliotek för att hantera JWT
 import { promisify } from 'util'; // promisify konverterar callback-baserade funktioner till promises
 import { sendError } from '../responses/index.js'; // Funktioner för att hantera API-svar
 
-const validateToken = {
+export const validateToken = {
   // Middleware som körs innan huvudlogiken
   before: async (request) => {
     try {
       // Hämta token från request-headers och ta bort "Bearer "-prefixet
-      const authHeader = request.event.headers.authorization;
+      const authHeader = request.event.headers.Authorization;
 
       // Kontrollera att headern finns och innehåller "Bearer "
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return sendError(401, {
-          success: false,
           message: 'No or invalid token provided.', // Felmeddelande om token saknas eller är felaktig
         });
       }
 
       // Extrahera och verifiera JWT-token
       const token = authHeader.replace('Bearer ', ''); // Ta bort "Bearer "-delen
+      // Verifiera token med hemligheten
       const decoded = await promisify(jwt.verify)(
         token,
         process.env.JWT_SECRET
-      ); // Verifiera token med hemligheten
+      );
 
       // Lagra användarens ID (från den dekodade token) i request-objektet
       request.event.userId = decoded.userId;
@@ -63,5 +63,3 @@ const validateToken = {
     });
   },
 };
-
-module.exports = { validateToken }; // Exportera validateToken-modulen

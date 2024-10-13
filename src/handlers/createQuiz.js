@@ -1,74 +1,62 @@
-const middy = require('@middy/core');
-const { nanoid } = require('nanoid');
-const validator = require('@middy/validator');
-const { transpileSchema } = require('@middy/validator/transpile');
-const httpJsonBodyParser = require('@middy/http-json-body-parser');
-const httpErrorHandler = require('@middy/http-error-handler');
-const httpHeaderNormalizer = require('@middy/http-header-normalizer');
+import middy from '@middy/core';
+import { v4 as uuidv4 } from 'uuid';
+import validator from '@middy/validator';
+import httpJsonBodyParser from '@middy/http-json-body-parser';
+import httpErrorHandler from '@middy/http-error-handler';
+import httpHeaderNormalizer from '@middy/http-header-normalizer';
 
-const { db } = require('../services/index');
-const { validateToken } = require('../middleware/validateToken');
-const { sendResponse, sendError } = require('../responses/index');
-const schema = require('../schemas/postNewQuizSchema.json');
+import { validateToken } from '../middleware/validateToken.js';
+import { sendResponse, sendError } from '../responses/index.js';
 
-const handler = middy(async (event) => {
+import { db } from '../services/index.js'; // DynamoDB-klient
+import { PutCommand } from '@aws-sdk/lib-dynamodb'; // DynamoDB-query
+
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+
+const schema = require('../schemas/postQuizSchema.json');
+
+export const handler = middy(async (event) => {
+  const requestBody = event.body;
+  const { quizName, description, questions } = requestBody;
+  const userId = event.userId;
+  const quizId = uuidv4();
+
+  const newQuiz = {
+    quizId,
+    quizName,
+    description,
+    creatorId: userId,
+  };
+
+  // En fråga innehåller: Frågan, svaret samt koordinater på kartan (longitud och latitud).
+
   try {
-    const requestBody = event.body;
-    const { quizName, description, questions } = requestBody;
-    const userId = event.userId;
-    const quizId = nanoid(2);
+    const dbResponse = await db.send(
+      new PutCommand({
+        TableName: process.env.DYNAMODB_QUIZZES_TABLE,
+        Item: {
+          quizId,
+          quizName,
+          description,
+          questions,
+        },
+      })
+    );
 
-    const newQuiz = {
-      quizId,
-      quizName,
-      description,
-      creatorId: userId,
-    };
-
-    const params = {
-      TableName: process.env.DYNAMODB_QUIZ_TABLE,
-      Item: newQuiz,
-    };
-
-    await db.put(params).promise();
-
-    // Spara frågorna
-    const questionParams = {
-      RequestItems: {
-        [process.env.DYNAMODB_QUESTION_TABLE]: questions.map((question) => ({
-          PutRequest: {
-            Item: {
-              questionId: nanoid(3),
-              quizId: quizId,
-              questionText: question.questionText,
-              answer: question.answer,
-              latitude: question.latitude,
-              longitude: question.longitude,
-            },
-          },
-        })),
-      },
-    };
-
-    const questionsResult = await db.batchWrite(questionParams).promise();
-
-    if (questionsResult.UnprocessedItems.roomDb) {
-      return sendError(500, {
-        success: false,
-        message: 'All questions could not be saved.',
-      });
-    }
+    // const putItemCommand = new PutItemCommand(putItemCommandInput);
+    // const dbResponse = await dynamoDbClient.send(putItemCommand);
 
     return sendResponse(200, {
-      success: true,
       message: 'Quiz successfully created.',
-      quiz: newQuiz,
+      quizId,
     });
   } catch (error) {
-    return sendError(400, {
-      success: false,
-      error: error.message,
-      message: 'Could not save your quiz.',
+    console.error('Error creating quiz: ', error);
+
+    return sendError(500, {
+      message: 'Could not create quiz.',
+      error: JSON.stringify(error),
     });
   }
 })
@@ -77,9 +65,7 @@ const handler = middy(async (event) => {
   .use(httpJsonBodyParser())
   .use(
     validator({
-      eventSchema: transpileSchema(schema),
+      inputSchema: schema,
     })
   )
   .use(httpErrorHandler());
-
-module.exports = { handler };
