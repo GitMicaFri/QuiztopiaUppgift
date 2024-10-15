@@ -1,6 +1,5 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-
 import middy from '@middy/core';
 import bcrypt from 'bcryptjs'; // För att jämföra lösenord
 import validator from '@middy/validator'; // Validering
@@ -8,12 +7,9 @@ import httpJsonBodyParser from '@middy/http-json-body-parser'; // För att tolka
 import httpErrorHandler from '@middy/http-error-handler'; // Hantera fel i HTTP-anrop
 import httpHeaderNormalizer from '@middy/http-header-normalizer'; // Normaliserar HTTP-header
 import { QueryCommand } from '@aws-sdk/lib-dynamodb'; // DynamoDB-query
-
 import { sendResponse, sendError } from '../responses/index.js';
 import { db } from '../services/index.js'; // DynamoDB-klient
-
-//import { createToken } from '../utilities/signInToken.js'; // JWT token-generator
-
+import { createToken } from '../utilities/signInToken.js'; // JWT token-generator
 import { createRequire } from 'module';
 
 dotenv.config();
@@ -67,9 +63,7 @@ export const handler = middy(async (event) => {
       });
     }
 
-    const token = jwt.sign({ userId: user.userId }, jwtSecret, {
-      expiresIn: '12h',
-    });
+    const token = createToken(user.userId); // Skapa JWT-token med createToken
 
     return sendResponse(200, {
       success: true,
