@@ -5,6 +5,7 @@ yarn-error.log*
 /.pnp
 .pnp.js
 .env
+serverless.yml
 .aws/
 .vscode/
 .DS_Store

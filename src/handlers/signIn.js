@@ -11,7 +11,8 @@ import { QueryCommand } from '@aws-sdk/lib-dynamodb'; // DynamoDB-query
 
 import { sendResponse, sendError } from '../responses/index.js';
 import { db } from '../services/index.js'; // DynamoDB-klient
-import { createToken } from '../utilities/signInToken.js'; // JWT token-generator
+
+//import { createToken } from '../utilities/signInToken.js'; // JWT token-generator
 
 import { createRequire } from 'module';
 
