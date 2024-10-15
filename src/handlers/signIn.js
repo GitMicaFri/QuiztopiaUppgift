@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+dotenv.config(); // Ladda miljövariabler från .env-fil
 import middy from '@middy/core';
 import bcrypt from 'bcryptjs'; // För att jämföra lösenord
 import validator from '@middy/validator'; // Validering
@@ -11,9 +11,6 @@ import { sendResponse, sendError } from '../responses/index.js';
 import { db } from '../services/index.js'; // DynamoDB-klient
 import { createToken } from '../utilities/signInToken.js'; // JWT token-generator
 import { createRequire } from 'module';
-
-dotenv.config();
-const jwtSecret = process.env.JWT_SECRET;
 
 const require = createRequire(import.meta.url);
 const schema = require('../schemas/signInSchema.json');
