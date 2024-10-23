@@ -5,11 +5,11 @@
     "body": {
       "type": "object",
       "required": ["userName", "password"],
-      "additionalProperties": false,
       "properties": {
         "userName": { "type": "string" },
         "password": { "type": "string" }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }

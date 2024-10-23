@@ -17,6 +17,8 @@ const schema = require('../schemas/signInSchema.json');
 
 // Huvudhandler för signIn-funktionen
 export const handler = middy(async (event) => {
+  console.log('Full event:', JSON.stringify(event, null, 2)); // Logga hela eventet
+
   try {
     const requestBody = event.body; // Tolkar JSON body från inkommande HTTP-anrop
 
