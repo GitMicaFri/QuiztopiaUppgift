@@ -17,7 +17,7 @@ export const handler = middy(async (event) => {
         // Skicka en begäran för att hämta quiz från DynamoDB
         const dbResponse = await db.send(
             new GetCommand({
-                TableName: process.env.DYNAMODB_QUIZZES_TABLE, // Din DynamoDB-tabell med quizzen
+                TableName: process.env.DYNAMODB_QUIZZES_TABLE, // DynamoDB-tabell med quizzen
                 Key: { quizId },
             })
         );
