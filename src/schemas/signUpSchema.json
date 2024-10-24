@@ -1,16 +1,16 @@
 {
-  "type": "object",
-  "required": ["body"],
-  "properties": {
-    "body": {
-      "type": "object",
-      "required": ["userName", "password", "passwordConfirm"],
-      "additionalProperties": false,
-      "properties": {
-        "userName": { "type": "string" },
-        "password": { "type": "string" },
-        "passwordConfirm": { "type": "string" }
-      }
+    "type": "object",
+    "required": ["body"],
+    "properties": {
+        "body": {
+            "type": "object",
+            "required": ["userName", "password", "passwordConfirm"],
+            "properties": {
+                "userName": { "type": "string" },
+                "password": { "type": "string" },
+                "passwordConfirm": { "type": "string" }
+            },
+            "additionalProperties": false
+        }
     }
-  }
 }
