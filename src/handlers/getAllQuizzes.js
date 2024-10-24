@@ -1,26 +1,37 @@
-/*
-const { sendResponse, sendError } = require('../responses/index');
-const { db } = require('../services/index');
+import middy from '@middy/core';
+import { ScanCommand } from '@aws-sdk/lib-dynamodb'; // För att hämta alla quiz
+import httpErrorHandler from '@middy/http-error-handler';
+import httpHeaderNormalizer from '@middy/http-header-normalizer';
 
-exports.handler = async (event, context) => {
-  try {
-    const params = {
-      TableName: process.env.DYNAMODB_QUIZ_TABLE,
-    };
+import { validateToken } from '../middleware/validateToken.js'; // Middleware för token-verifiering
+import { sendResponse, sendError } from '../responses/index.js'; // Response-hantering
+import { db } from '../services/index.js'; // DynamoDB-klient
 
-    const result = await db.scan(params).promise();
+export const handler = middy(async (event) => {
+    try {
+        // Skicka en begäran för att hämta alla quiz från DynamoDB
+        const dbResponse = await db.send(
+            new ScanCommand({
+                TableName: process.env.DYNAMODB_QUIZZES_TABLE, // Din DynamoDB-tabell med quizzen
+            })
+        );
 
-    return sendResponse(200, {
-      success: true,
-      results: result.Items.length,
-      quizzes: result.Items,
-    });
-  } catch (error) {
-    return sendError(500, {
-      success: false,
-      error: error.message,
-      message: 'Could not retrieve quizes.',
-    });
-  }
-};
-*/
+        const quizzes = dbResponse.Items; // Alla quiz som hämtades
+
+        // Returnera alla quiz i svaret
+        return sendResponse(200, {
+            message: 'Quizzes successfully retrieved.',
+            quizzes, // Lista med quiz
+        });
+    } catch (error) {
+        console.error('Error retrieving quizzes: ', error);
+
+        return sendError(500, {
+            message: 'Could not retrieve quizzes.',
+            error: JSON.stringify(error),
+        });
+    }
+})
+    .use(validateToken) // Verifierar att användaren är inloggad
+    .use(httpHeaderNormalizer()) // Normaliserar HTTP-headrar
+    .use(httpErrorHandler()); // Hanterar eventuella fel
