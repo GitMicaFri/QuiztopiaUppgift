@@ -1,53 +1,47 @@
-/*
-const { sendResponse, sendError } = require('../responses/index');
-const { checkIfQuizExists } = require('../utilities/quizUtils');
-const { db } = require('../services/index');
+import middy from '@middy/core';
+import { GetCommand } from '@aws-sdk/lib-dynamodb'; // För att hämta alla quiz
+import httpErrorHandler from '@middy/http-error-handler';
+import httpHeaderNormalizer from '@middy/http-header-normalizer';
+import { validateToken } from '../middleware/validateToken.js'; // Middleware för token-verifiering
+import { sendResponse, sendError } from '../responses/index.js'; // Response-hantering
+import { db } from '../services/index.js'; // DynamoDB-klient
 
-exports.handler = async (event, context) => {
-  try {
-    const quizId = event.pathParameters.quizId;
+export const handler = middy(async (event) => {
+    const { quizId } = event.pathParameters; // Hämta quizId från URL:en
 
-    const quiz = await checkIfQuizExists(quizId);
-
-    if (!quiz) {
-      return sendError(404, {
-        success: false,
-        message: 'Quiz not found.',
-      });
+    if (!quizId) {
+        return sendError(400, { message: 'Quiz ID is required' });
     }
 
-    const questionParams = {
-      TableName: process.env.DYNAMODB_QUESTION_TABLE,
-      IndexName: process.env.DYNAMODB_QUESTION_INDEX,
-      KeyConditionExpression: 'quizId = :quizId',
-      ExpressionAttributeValues: {
-        ':quizId': quizId,
-      },
-    };
+    try {
+        // Skicka en begäran för att hämta quiz från DynamoDB
+        const dbResponse = await db.send(
+            new GetCommand({
+                TableName: process.env.DYNAMODB_QUIZZES_TABLE, // Din DynamoDB-tabell med quizzen
+                Key: { quizId },
+            })
+        );
 
-    const questionResult = await db.query(questionParams).promise();
+        const quiz = dbResponse.Item; // Det quiz som hämtades
 
-    if (questionResult.Count === 0) {
-      return sendError(404, {
-        success: false,
-        message: 'Questions not found.',
-      });
+        if (!quiz) {
+            return sendError(404, { message: 'Quiz not found' });
+        }
+
+        // Returnera specifikt quiz i svaret
+        return sendResponse(200, {
+            message: 'Quiz successfully retrieved.',
+            quiz, // Specifikt quiz
+        });
+    } catch (error) {
+        console.error('Error retrieving quiz: ', error);
+
+        return sendError(500, {
+            message: 'Could not retrieve quiz.',
+            error: JSON.stringify(error),
+        });
     }
-
-    const questions = questionResult.Items;
-
-    return sendResponse(200, {
-      success: true,
-      results: questions.length,
-      quiz,
-      questions,
-    });
-  } catch (error) {
-    return sendError(500, {
-      success: false,
-      error: error.message,
-      message: 'Could not retrieve quiz and questions.',
-    });
-  }
-};
-*/
+})
+    .use(validateToken) // Verifierar att användaren är inloggad
+    .use(httpHeaderNormalizer()) // Normaliserar HTTP-headrar
+    .use(httpErrorHandler()); // Hanterar eventuella fel
