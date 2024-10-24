@@ -87,7 +87,7 @@ functions:
                   method: delete
 
     addQuestion:
-        handler: src/handlers/addQuestion.handler
+        handler: src/handlers/postQuestion.handler
         events:
             - http:
                   path: quizzes/{quizId}/questions

@@ -1,27 +1,17 @@
 {
-  "type": "object",
-  "properties": {
-    "body": {
-      "type": "object",
-      "properties": {
-        "questions": {
-          "type": "array",
-          "items": {
+    "type": "object",
+    "properties": {
+        "body": {
             "type": "object",
             "properties": {
-              "questionText": { "type": "string" },
-              "answer": { "type": "string" },
-              "longitude": { "type": "number" },
-              "latidtude": { "type": "number" }
+                "questionText": { "type": "string" },
+                "answer": { "type": "string" },
+                "longitude": { "type": "number" },
+                "latitude": { "type": "number" }
             },
-            "required": ["questionText", "answer", "longitude", "latidtude"],
+            "required": ["questionText", "answer", "longitude", "latitude"],
             "additionalProperties": false
-          }
         }
-      },
-      "required": ["questions"],
-      "additionalProperties": false
-    }
-  },
-  "required": ["body"]
+    },
+    "required": ["body"]
 }
