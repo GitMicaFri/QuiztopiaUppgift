@@ -29,8 +29,6 @@ export const handler = middy(async (event) => {
         creatorId: userId,
     };
 
-    // En fråga innehåller: Frågan, svaret samt koordinater på kartan (longitud och latitud).
-
     try {
         const dbResponse = await db.send(
             new PutCommand({
@@ -43,9 +41,6 @@ export const handler = middy(async (event) => {
                 },
             })
         );
-
-        // const putItemCommand = new PutItemCommand(putItemCommandInput);
-        // const dbResponse = await dynamoDbClient.send(putItemCommand);
 
         return sendResponse(200, {
             message: 'Quiz successfully created.',

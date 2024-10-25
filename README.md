@@ -11,17 +11,17 @@ Instruktioner:
 Beskrivning av vad som ska byggas, kravspecifikationen och de tekniska krav.
 
 Kravspecifikation:
-Det går att skapa konto och logga in.
-Det går att se alla quiz, vad quiz:et heter samt vem som skapat det.
-Det går att välja ett specifikt quiz och få alla frågor.
-Kräver inloggning
+✔ Det går att skapa konto och logga in.
+✔ Det går att se alla quiz, vad quiz:et heter samt vem som skapat det.
+✔ Det går att välja ett specifikt quiz och få alla frågor.
+✔ Kräver inloggning
 
 För nedan funktionalitet är det enbart på sin egen användare man kan arbeta på. Alltså du kan exempelvis inte ta bort någon annans quiz.
 
-Det går att skapa ett quiz.
-Det går att lägga till frågor på ett skapat quiz.
-En fråga innehåller: Frågan, svaret samt koordinater på kartan (longitud och latitud).
-Det går att ta bort ett quiz.
+✔ Det går att skapa ett quiz.
+✔ Det går att lägga till frågor på ett skapat quiz.
+✔ En fråga innehåller: Frågan, svaret samt koordinater på kartan (longitud och latitud).
+✔ Det går att ta bort ett quiz.
 
 VG-krav:
 Det finns en "leaderboard" över vilka spelare som fått flest poäng på varje quiz. Här kommer man behöva ha två endpoints, en för att registrera poäng för en användare och en endpoint för att hämta topplista över poäng och användare för ett quiz.

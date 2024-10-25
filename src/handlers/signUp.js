@@ -1,17 +1,14 @@
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
-import middy from '@middy/core'; // Middy för att använda middleware i Lambda-funktioner
-import bcrypt from 'bcryptjs'; // Bcryptjs för att hasha lösenord
-import validator from '@middy/validator'; // Validator för att validera inkommande förfrågningar
+import middy from '@middy/core'; // För att använda middleware i Lambda-funktioner
+import bcrypt from 'bcryptjs'; // Bcryptjs hashar lösenord
+import validator from '@middy/validator'; // Validerar inkommande requests
 import httpJsonBodyParser from '@middy/http-json-body-parser'; // Middleware för att tolka JSON i HTTP body
 import httpErrorHandler from '@middy/http-error-handler'; // Middleware för att hantera fel och skicka meningsfulla HTTP-svar
 import httpHeaderNormalizer from '@middy/http-header-normalizer'; // Normaliserar HTTP-headrar (t.ex. versaler/små bokstäver)
 import { QueryCommand, PutCommand } from '@aws-sdk/lib-dynamodb'; // DynamoDB-kommandon för Query och Put
-
-// Importerar anpassade moduler för att hantera svar och databasoperationer
-import { sendResponse, sendError } from '../responses/index.js';
-import { db } from '../services/index.js'; // DynamoDB-klient
-//import { createToken } from '../utilities/signInToken.js'; // Skapar en JWT token
+import { sendResponse, sendError } from '../responses/index.js'; // Importerar anpassade moduler för att hantera svar och databasoperationer
+import { db } from '../services/index.js';
 import { createRequire } from 'module';
 
 dotenv.config();
@@ -85,7 +82,7 @@ export const handler = middy(async (event) => {
         // Returnerar ett lyckat svar med användaruppgifter och token
         return sendResponse(200);
     } catch (error) {
-        // Om indexet backfylls, returnera ett 503-felmeddelande (Service Unavailable)
+        // Om efterindexeringen (uppdateringen av tabellen) dröjer, returnera ett 503-felmeddelande (Service Unavailable)
         if (
             error.message.includes(
                 'Cannot read from backfilling global secondary index'
@@ -98,7 +95,7 @@ export const handler = middy(async (event) => {
             });
         }
 
-        // Felhantering: Om något går fel, returnera ett felmeddelande
+        // Om något går fel, returnera ett felmeddelande
         return sendError(500, {
             success: false,
             errorMessage: error.message, // Specifikt felmeddelande för felsökning

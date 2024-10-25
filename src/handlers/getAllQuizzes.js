@@ -2,17 +2,15 @@ import middy from '@middy/core';
 import { ScanCommand } from '@aws-sdk/lib-dynamodb'; // För att hämta alla quiz
 import httpErrorHandler from '@middy/http-error-handler';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
-
-//import { validateToken } from '../middleware/validateToken.js'; // Middleware för token-verifiering
-import { sendResponse, sendError } from '../responses/index.js'; // Response-hantering
-import { db } from '../services/index.js'; // DynamoDB-klient
+import { sendResponse, sendError } from '../responses/index.js';
+import { db } from '../services/index.js';
 
 export const handler = middy(async (event) => {
     try {
         // Skicka en begäran för att hämta alla quiz från DynamoDB
         const dbResponse = await db.send(
             new ScanCommand({
-                TableName: process.env.DYNAMODB_QUIZZES_TABLE, // Din DynamoDB-tabell med quizzen
+                TableName: process.env.DYNAMODB_QUIZZES_TABLE,
             })
         );
 
@@ -32,6 +30,5 @@ export const handler = middy(async (event) => {
         });
     }
 })
-    //.use(validateToken) // Verifierar att användaren är inloggad
-    .use(httpHeaderNormalizer()) // Normaliserar HTTP-headrar
-    .use(httpErrorHandler()); // Hanterar eventuella fel
+    .use(httpHeaderNormalizer())
+    .use(httpErrorHandler());

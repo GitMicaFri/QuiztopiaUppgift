@@ -2,9 +2,8 @@ import middy from '@middy/core';
 import { GetCommand } from '@aws-sdk/lib-dynamodb'; // För att hämta alla quiz
 import httpErrorHandler from '@middy/http-error-handler';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
-//import { validateToken } from '../middleware/validateToken.js'; // Middleware för token-verifiering
-import { sendResponse, sendError } from '../responses/index.js'; // Response-hantering
-import { db } from '../services/index.js'; // DynamoDB-klient
+import { sendResponse, sendError } from '../responses/index.js';
+import { db } from '../services/index.js';
 
 export const handler = middy(async (event) => {
     const { quizId } = event.pathParameters; // Hämta quizId från URL:en
@@ -14,10 +13,10 @@ export const handler = middy(async (event) => {
     }
 
     try {
-        // Skicka en begäran för att hämta quiz från DynamoDB
+        // Skicka en begäran för att hämta quiz med specifikt id från DynamoDB
         const dbResponse = await db.send(
             new GetCommand({
-                TableName: process.env.DYNAMODB_QUIZZES_TABLE, // DynamoDB-tabell med quizzen
+                TableName: process.env.DYNAMODB_QUIZZES_TABLE,
                 Key: { quizId },
             })
         );
@@ -42,6 +41,5 @@ export const handler = middy(async (event) => {
         });
     }
 })
-    //.use(validateToken) // Verifierar att användaren är inloggad
-    .use(httpHeaderNormalizer()) // Normaliserar HTTP-headrar
-    .use(httpErrorHandler()); // Hanterar eventuella fel
+    .use(httpHeaderNormalizer())
+    .use(httpErrorHandler());

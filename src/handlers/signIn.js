@@ -1,16 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config(); // Ladda miljövariabler från .env-fil
-
 import middy from '@middy/core';
 import bcrypt from 'bcryptjs'; // För att jämföra lösenord
 import httpJsonBodyParser from '@middy/http-json-body-parser'; // För att tolka JSON body
-// import validator from '@middy/validator'; // Validering
-// import httpErrorHandler from '@middy/http-error-handler'; // Hantera fel i HTTP-anrop
-// import httpHeaderNormalizer from '@middy/http-header-normalizer'; // Normalisera HTTP-header
-
 import { QueryCommand } from '@aws-sdk/lib-dynamodb'; // DynamoDB-query
 import { sendResponse, sendError } from '../responses/index.js';
-import { db } from '../services/index.js'; // DynamoDB-klient
+import { db } from '../services/index.js';
 import { createToken } from '../utilities/signInToken.js'; // JWT token-generator
 import { createRequire } from 'module';
 
@@ -37,11 +32,11 @@ const baseHandler = async (event) => {
         // Kontrollera om användaren finns i databasen
         const userResult = await db.send(
             new QueryCommand({
-                TableName: process.env.DYNAMODB_USERS_TABLE, // DynamoDB-tabellen för användare
-                IndexName: process.env.DYNAMODB_USER_INDEX, // Sekundärt index för att söka på användarnamn
-                KeyConditionExpression: 'userName = :userName', // Sökvillkor
+                TableName: process.env.DYNAMODB_USERS_TABLE,
+                IndexName: process.env.DYNAMODB_USER_INDEX,
+                KeyConditionExpression: 'userName = :userName',
                 ExpressionAttributeValues: {
-                    ':userName': requestBody.userName, // Användarnamnet att söka efter
+                    ':userName': requestBody.userName,
                 },
             })
         );
@@ -56,7 +51,7 @@ const baseHandler = async (event) => {
             });
         }
 
-        // Kolla lösenord
+        // Kolla lösenordet
         const isPasswordValid = await bcrypt.compare(
             requestBody.password,
             user.password
@@ -84,5 +79,5 @@ const baseHandler = async (event) => {
     }
 };
 
-// Wrap baseHandler med Middy och middleware
+// Wrappa baseHandler med Middy och middleware
 export const handler = middy(baseHandler).use(httpJsonBodyParser()); // Tolka JSON body

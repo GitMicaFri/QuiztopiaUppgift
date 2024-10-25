@@ -1,10 +1,10 @@
 import middy from '@middy/core';
-import { DeleteCommand } from '@aws-sdk/lib-dynamodb'; // För att hämta alla quiz
+import { DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import httpErrorHandler from '@middy/http-error-handler';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
 import { validateToken } from '../middleware/validateToken.js'; // Middleware för token-verifiering
-import { sendResponse, sendError } from '../responses/index.js'; // Response-hantering
-import { db } from '../services/index.js'; // DynamoDB-klient
+import { sendResponse, sendError } from '../responses/index.js';
+import { db } from '../services/index.js';
 
 export const handler = middy(async (event) => {
     const { quizId } = event.pathParameters; // Hämta quizId från URL:en
@@ -17,12 +17,11 @@ export const handler = middy(async (event) => {
         // Skicka en begäran för att ta bort quiz från DynamoDB
         await db.send(
             new DeleteCommand({
-                TableName: process.env.DYNAMODB_QUIZZES_TABLE, // DynamoDB-tabell med quizzen
+                TableName: process.env.DYNAMODB_QUIZZES_TABLE,
                 Key: { quizId },
             })
         );
 
-        // Returnera bekräftelse på att quizet är borttaget
         return sendResponse(200, {
             message: 'Quiz successfully deleted.',
             quizId, // Specifikt quizId

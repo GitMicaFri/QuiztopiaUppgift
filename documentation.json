@@ -1,0 +1,65 @@
+{
+    "documentation": {
+        "Skapa konto": {
+            "method": "POST",
+            "url": "https://lyge3o49wd.execute-api.eu-north-1.amazonaws.com/dev/signUp",
+            "body": {
+                "userName": "Maja",
+                "password": "MajaPassword",
+                "passwordConfirm": "MajaPassword"
+            }
+        },
+        "Logga in": {
+            "method": "POST",
+            "url": "https://lyge3o49wd.execute-api.eu-north-1.amazonaws.com/dev/signIn",
+            "description": "Här anges även det token som man fick i signUp i Authorization.",
+            "body": {
+                "userName": "Izzie",
+                "password": "IzziePassword"
+            }
+        },
+        "Skapa quiz": {
+            "method": "POST",
+            "url": "https://lyge3o49wd.execute-api.eu-north-1.amazonaws.com/dev/quizzes",
+            "description": "Här anges även det token som man fick i signUp i Authorization.",
+            "body": {
+                "quizName": "Geography Quiz 10",
+                "description": "A boring geography quiz",
+                "questions": [
+                    {
+                        "questionText": "What city is the most boring one?",
+                        "answer": "Boringtown",
+                        "longitude": 340,
+                        "latitude": 183
+                    }
+                ]
+            }
+        },
+        "Hämta ett specifikt quiz": {
+            "method": "GET",
+            "url": "https://lyge3o49wd.execute-api.eu-north-1.amazonaws.com/dev/quizzes/65a2f8fc-90c7-420a-bf98-ea3864b5103c",
+            "description": "Ingenting i bodyn, men quiz-id i url:en."
+        },
+        "Delete quiz": {
+            "method": "DELETE",
+            "url": "https://lyge3o49wd.execute-api.eu-north-1.amazonaws.com/dev/quizzes/4fec1a72-d92c-4e1c-aad2-46a6ee753bed",
+            "description": "Ingenting i bodyn, men quiz-id i url:en. Här anges även det token som man fick i signUp i Authorization."
+        },
+        "Get all quizzes": {
+            "method": "GET",
+            "url": "https://lyge3o49wd.execute-api.eu-north-1.amazonaws.com/dev/quizzes",
+            "description": "Ingenting i bodyn. Ingen auktorisation."
+        },
+        "Post question": {
+            "method": "POST",
+            "url": "https://lyge3o49wd.execute-api.eu-north-1.amazonaws.com/dev/quizzes/65a2f8fc-90c7-420a-bf98-ea3864b5103c/questions",
+            "description": "Quiz-id i url:en. Token i auktorisation.",
+            "body": {
+                "questionText": "What is the capital of Norway?",
+                "answer": "Oslo",
+                "longitude": 124,
+                "latitude": 456
+            }
+        }
+    }
+}
