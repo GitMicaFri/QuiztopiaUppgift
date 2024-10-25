@@ -17,55 +17,55 @@ const require = createRequire(import.meta.url);
 const schema = require('../schemas/postQuizSchema.json');
 
 export const handler = middy(async (event) => {
-  const requestBody = event.body;
-  const { quizName, description, questions } = requestBody;
-  const userId = event.userId;
-  const quizId = uuidv4();
+    const requestBody = event.body;
+    const { quizName, description, questions } = requestBody;
+    const userId = event.userId;
+    const quizId = uuidv4();
 
-  const newQuiz = {
-    quizId,
-    quizName,
-    description,
-    creatorId: userId,
-  };
+    const newQuiz = {
+        quizId,
+        quizName,
+        description,
+        creatorId: userId,
+    };
 
-  // En fråga innehåller: Frågan, svaret samt koordinater på kartan (longitud och latitud).
+    // En fråga innehåller: Frågan, svaret samt koordinater på kartan (longitud och latitud).
 
-  try {
-    const dbResponse = await db.send(
-      new PutCommand({
-        TableName: process.env.DYNAMODB_QUIZZES_TABLE,
-        Item: {
-          quizId,
-          quizName,
-          description,
-          questions,
-        },
-      })
-    );
+    try {
+        const dbResponse = await db.send(
+            new PutCommand({
+                TableName: process.env.DYNAMODB_QUIZZES_TABLE,
+                Item: {
+                    quizId,
+                    quizName,
+                    description,
+                    questions,
+                },
+            })
+        );
 
-    // const putItemCommand = new PutItemCommand(putItemCommandInput);
-    // const dbResponse = await dynamoDbClient.send(putItemCommand);
+        // const putItemCommand = new PutItemCommand(putItemCommandInput);
+        // const dbResponse = await dynamoDbClient.send(putItemCommand);
 
-    return sendResponse(200, {
-      message: 'Quiz successfully created.',
-      quizId,
-    });
-  } catch (error) {
-    console.error('Error creating quiz: ', error);
+        return sendResponse(200, {
+            message: 'Quiz successfully created.',
+            quizId,
+        });
+    } catch (error) {
+        console.error('Error creating quiz: ', error);
 
-    return sendError(500, {
-      message: 'Could not create quiz.',
-      error: JSON.stringify(error),
-    });
-  }
+        return sendError(500, {
+            message: 'Could not create quiz.',
+            error: JSON.stringify(error),
+        });
+    }
 })
-  .use(validateToken)
-  .use(httpHeaderNormalizer())
-  .use(httpJsonBodyParser())
-  .use(
-    validator({
-      inputSchema: schema,
-    })
-  )
-  .use(httpErrorHandler());
+    .use(validateToken)
+    .use(httpHeaderNormalizer())
+    .use(httpJsonBodyParser())
+    .use(
+        validator({
+            inputSchema: schema,
+        })
+    )
+    .use(httpErrorHandler());

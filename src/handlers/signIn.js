@@ -86,6 +86,3 @@ const baseHandler = async (event) => {
 
 // Wrap baseHandler med Middy och middleware
 export const handler = middy(baseHandler).use(httpJsonBodyParser()); // Tolka JSON body
-// .use(httpHeaderNormalizer()) // Normalisera HTTP-header
-// .use(validator({ inputSchema: schema })) // Validera mot JSON-schema
-// .use(httpErrorHandler()); // Hantera eventuella fel

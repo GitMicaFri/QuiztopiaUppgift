@@ -3,7 +3,7 @@ import { ScanCommand } from '@aws-sdk/lib-dynamodb'; // För att hämta alla qui
 import httpErrorHandler from '@middy/http-error-handler';
 import httpHeaderNormalizer from '@middy/http-header-normalizer';
 
-import { validateToken } from '../middleware/validateToken.js'; // Middleware för token-verifiering
+//import { validateToken } from '../middleware/validateToken.js'; // Middleware för token-verifiering
 import { sendResponse, sendError } from '../responses/index.js'; // Response-hantering
 import { db } from '../services/index.js'; // DynamoDB-klient
 
@@ -32,6 +32,6 @@ export const handler = middy(async (event) => {
         });
     }
 })
-    .use(validateToken) // Verifierar att användaren är inloggad
+    //.use(validateToken) // Verifierar att användaren är inloggad
     .use(httpHeaderNormalizer()) // Normaliserar HTTP-headrar
     .use(httpErrorHandler()); // Hanterar eventuella fel
